@@ -1,3 +1,3 @@
 # CarRacing
 
-[](featured_image.jpg)
+![](featured_image.jpg)
