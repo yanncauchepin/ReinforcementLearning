@@ -51,7 +51,7 @@ def render_environment_agent(artefact_agent):
         done = False
 
         while not done:
-            action = np.argmax(agent.predict(state))  # Use the model to predict action
+            action = np.argmax(agent.predict(state)[0])  # Use the model to predict action
             next_state, reward, done, _, _ = ENV.step(action)
             state = np.reshape(next_state, [1, 96, 96, 3])  # Prepare the next state for prediction
             

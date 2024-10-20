@@ -21,7 +21,8 @@ class DQNAgent():
             epsilon = 1.0, 
             epsilon_decay = 0.9995,
             min_epsilon = 0.1,
-            memory_size = 10000
+            memory_size = 10000,
+            pre_trained_model = None
             ):
         self.num_episodes = num_episodes
         self.max_steps = max_steps
@@ -33,7 +34,11 @@ class DQNAgent():
         self.memory_size = memory_size
         self.memory = deque(maxlen=memory_size)
         self.artefact_name = artefact_name
-        self.model = self.build_model()
+        if pre_trained_model is None:
+            self.model = self.build_model()
+        else:
+            self.model = tf.keras.models.load_model(f"{artefact_name}.keras")
+            self.artefact_name = f"{artefact_name}_retrained"
         with open(f'trained_agents/{self.artefact_name}_log.csv', 'w') as log:
             log.write("episode, steps, reward")
 
@@ -69,7 +74,7 @@ class DQNAgent():
             self.model.fit(state, target_f, epochs=1, verbose=0)
 
     def save_info(self):
-        with open(f'info_{self.artefact_name}.txt', 'w') as info:
+        with open(f'trained_agents/info_{self.artefact_name}.txt', 'w') as info:
             info.write(f"NUM EPISODE: {self.num_episodes}")
             info.write(f"MAX_STEPS: {self.max_steps}")
             info.write(f"ALPHA: {self.alpha}")
@@ -85,6 +90,7 @@ class DQNAgent():
             log.write(f"\n{episode}, {steps}, {reward}")
 
     def train(self):
+        self.save_info()
         for episode in range(self.num_episodes):
             state, _ = ENV.reset()
             state = np.reshape(state, [1, 96, 96, 3])
