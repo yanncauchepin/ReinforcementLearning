@@ -21,5 +21,5 @@ def train_agent():
 
 if __name__ == '__main__':
     train_agent()
-    ENV.close()
-    # render_environment_random()
+    # ENV.close()
+    # render_environment_agent("rl_dqn_agent_20241020002617")

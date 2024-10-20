@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import pygame
 import tensorflow as tf
 import numpy as np
@@ -39,7 +38,7 @@ def render_environment_random():
     pygame.quit()
 
 def render_environment_agent(artefact_agent):
-    agent = tf.keras.models.load_model(f"{artefact_agent}.h5")
+    agent = tf.keras.models.load_model(f"trained_agents/{artefact_agent}.keras")
 
     # Create a display window
     screen = pygame.display.set_mode((800, 800))

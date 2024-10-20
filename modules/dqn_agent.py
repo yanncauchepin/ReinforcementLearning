@@ -2,7 +2,6 @@ import numpy as np
 import random
 import tensorflow as tf
 from collections import deque
-import os
 
 from env import ENV
 
@@ -39,7 +38,7 @@ class DQNAgent():
         else:
             self.model = tf.keras.models.load_model(f"{artefact_name}.keras")
             self.artefact_name = f"{artefact_name}_retrained"
-        with open(f'trained_agents/{self.artefact_name}_log.csv', 'w') as log:
+        with open(f'trained_agents/{self.artefact_name}_log.csv', 'a') as log:
             log.write("episode, steps, reward")
 
     def build_model(self):
@@ -74,15 +73,15 @@ class DQNAgent():
             self.model.fit(state, target_f, epochs=1, verbose=0)
 
     def save_info(self):
-        with open(f'trained_agents/info_{self.artefact_name}.txt', 'w') as info:
+        with open(f'trained_agents/{self.artefact_name}_info.txt', 'w') as info:
             info.write(f"NUM EPISODE: {self.num_episodes}")
-            info.write(f"MAX_STEPS: {self.max_steps}")
-            info.write(f"ALPHA: {self.alpha}")
-            info.write(f"GAMMA: {self.gamma}")
-            info.write(f"EPSILON: {self.epsilon}")
-            info.write(f"EPSILON_DECAY: {self.epsilon_decay}")
-            info.write(f"MIN_EPSILON: {self.min_epsilon}")
-            info.write(f"MEMORY_SIZE: {self.memory_size}")
+            info.write(f"\nMAX_STEPS: {self.max_steps}")
+            info.write(f"\nALPHA: {self.alpha}")
+            info.write(f"\nGAMMA: {self.gamma}")
+            info.write(f"\nEPSILON: {self.epsilon}")
+            info.write(f"\nEPSILON_DECAY: {self.epsilon_decay}")
+            info.write(f"\nMIN_EPSILON: {self.min_epsilon}")
+            info.write(f"\nMEMORY_SIZE: {self.memory_size}")
     
     def save_artefact(self, episode, steps, reward):
         self.model.save(f"trained_agents/{self.artefact_name}.keras")
