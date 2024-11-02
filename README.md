@@ -1,3 +1,3 @@
-# CarRacing
+# GymnasiumRL
 
 ![](featured_image.jpg)
