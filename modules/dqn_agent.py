@@ -8,21 +8,21 @@ from env import ENV
 observation_size = ENV.observation_space.shape
 action_size = ENV.action_space.n
 
-class DQNAgent():
 
+class DQNAgent:
     def __init__(
-            self, 
-            artefact_name,
-            num_episodes = 10000,
-            max_steps = 200,
-            alpha = 0.001,
-            gamma = 0.99,
-            epsilon = 1.0, 
-            epsilon_decay = 0.9995,
-            min_epsilon = 0.1,
-            memory_size = 10000,
-            pre_trained_model = None
-            ):
+        self,
+        artefact_name,
+        num_episodes=10000,
+        max_steps=200,
+        alpha=0.001,
+        gamma=0.99,
+        epsilon=1.0,
+        epsilon_decay=0.9995,
+        min_epsilon=0.1,
+        memory_size=10000,
+        pre_trained_model=None,
+    ):
         self.num_episodes = num_episodes
         self.max_steps = max_steps
         self.alpha = alpha
@@ -38,19 +38,25 @@ class DQNAgent():
         else:
             self.model = tf.keras.models.load_model(f"{artefact_name}.keras")
             self.artefact_name = f"{artefact_name}_retrained"
-        with open(f'trained_agents/{self.artefact_name}_log.csv', 'a') as log:
+        with open(f"trained_agents/{self.artefact_name}_log.csv", "a") as log:
             log.write("episode, steps, reward")
 
     def build_model(self):
         model = tf.keras.Sequential()
-        model.add(tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=observation_size))
+        model.add(
+            tf.keras.layers.Conv2D(
+                32, (3, 3), activation="relu", input_shape=observation_size
+            )
+        )
         model.add(tf.keras.layers.MaxPooling2D())
-        model.add(tf.keras.layers.Conv2D(64, (3, 3), activation='relu'))
+        model.add(tf.keras.layers.Conv2D(64, (3, 3), activation="relu"))
         model.add(tf.keras.layers.MaxPooling2D())
         model.add(tf.keras.layers.Flatten())
-        model.add(tf.keras.layers.Dense(64, activation='relu'))
-        model.add(tf.keras.layers.Dense(action_size, activation='linear'))
-        model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=self.alpha), loss='mse')
+        model.add(tf.keras.layers.Dense(64, activation="relu"))
+        model.add(tf.keras.layers.Dense(action_size, activation="linear"))
+        model.compile(
+            optimizer=tf.keras.optimizers.Adam(learning_rate=self.alpha), loss="mse"
+        )
         return model
 
     def remember(self, state, action, reward, next_state, done):
@@ -73,7 +79,7 @@ class DQNAgent():
             self.model.fit(state, target_f, epochs=1, verbose=0)
 
     def save_info(self):
-        with open(f'trained_agents/{self.artefact_name}_info.txt', 'w') as info:
+        with open(f"trained_agents/{self.artefact_name}_info.txt", "w") as info:
             info.write(f"NUM EPISODE: {self.num_episodes}")
             info.write(f"\nMAX_STEPS: {self.max_steps}")
             info.write(f"\nALPHA: {self.alpha}")
@@ -82,10 +88,10 @@ class DQNAgent():
             info.write(f"\nEPSILON_DECAY: {self.epsilon_decay}")
             info.write(f"\nMIN_EPSILON: {self.min_epsilon}")
             info.write(f"\nMEMORY_SIZE: {self.memory_size}")
-    
+
     def save_artefact(self, episode, steps, reward):
         self.model.save(f"trained_agents/{self.artefact_name}.keras")
-        with open(f'trained_agents/{self.artefact_name}_log.csv', 'a') as log:
+        with open(f"trained_agents/{self.artefact_name}_log.csv", "a") as log:
             log.write(f"\n{episode}, {steps}, {reward}")
 
     def train(self):
@@ -105,9 +111,9 @@ class DQNAgent():
                 total_reward += reward
                 if done:
                     break
-            
+
             self.save_artefact(episode, step, total_reward)
-            
+
             if len(self.memory) > 32:
                 self.replay(32)
 
@@ -115,8 +121,3 @@ class DQNAgent():
                 self.epsilon *= self.epsilon_decay
 
             print(f"Episode {episode}: Total Reward: {total_reward}")
-        
-        
-        
-
-
