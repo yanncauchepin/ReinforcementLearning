@@ -1,3 +1,6 @@
-# GymnasiumRL
 
-![](featured_image.jpg)
+![](featured_image.gif)
+
+---
+
+# Reinforcement Learning
