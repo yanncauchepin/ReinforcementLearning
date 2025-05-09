@@ -1,5 +1,5 @@
 <p align="center">
-    ![](featured_image.gif)
+  <img src="featured_image.gif" alt="" width="80%">
 </p>
 
 ---
