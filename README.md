@@ -1,5 +1,6 @@
-
-![](featured_image.gif)
+<p align="center">
+    ![](featured_image.gif)
+</p>
 
 ---
 
