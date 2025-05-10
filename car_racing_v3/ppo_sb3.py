@@ -57,7 +57,7 @@ def train_agent(static=False):
         "CnnPolicy", 
         vec_env, 
         verbose=1, 
-        tensorboard_log=LOG_DIR,
+        tensorboard_log=Path(ROOT_PATH, LOG_DIR),
         learning_rate=LEARNING_RATE,
         n_steps=N_STEPS,
         batch_size=BATCH_SIZE,
