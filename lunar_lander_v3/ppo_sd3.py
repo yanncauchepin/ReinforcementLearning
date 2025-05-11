@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import datetime
 import json
+from tqdm import tqdm
 
 ROOT_PATH = Path(__file__).parent 
 
@@ -28,7 +29,7 @@ now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
 AGENT_NOW = f"sd3_{now}"
 AGENT_STATIC = "sd3" 
 
-TIMESTEPS = 200000  
+TIMESTEPS = 2000000 
 N_STEPS = 2048      
 LEARNING_RATE = 0.0003
 BATCH_SIZE = 64
@@ -101,8 +102,9 @@ def agent_overwiew(agent_path):
 
     terminated = [False]
 
-    for episode in range(3):
+    for episode in tqdm(range(5)):
         observation = eval_env.reset()
+        terminated = [False]
         while terminated[0] == False: 
             action, _states = agent.predict(observation, deterministic=True)
             observation, rewards, terminated, info = eval_env.step(action)
