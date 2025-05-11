@@ -4,22 +4,21 @@
         "environment" : "CarRacing-v3",
         "render_mode" : "None",
         "lap_complete_percent" : 1.00,
-        "domain_randomize" : "False"
+        "domain_randomize" : "True",
+        "continuous" : "True"
     },
     "PPO" : {
         "name" : "Proximal Policy Optimization",
         "continuous" : "True", 
-        "mdoel_dir" : "models/ppo",
+        "agent_dir" : "agents/ppo",
         "log_dir" : "logs/ppo",
-        "checkpoint_dir" : "checkpoints/ppo",
-        "policy_dir" : "policies/ppo"
+        "checkpoint_dir" : "checkpoints/ppo"
     },
     "DQN" : {
         "name" : "Deep Q-Network / Rainbow",
         "continuous" : "False",
-        "model_dir" : "models/dqn",
+        "agent_dir" : "agents/dqn",
         "log_dir" : "logs/dqn",
-        "checkpoint_dir" : "checkpoints/dqn",
-        "policy_dir" : "policies/dqn"
+        "checkpoint_dir" : "checkpoints/dqn"
     }
 } 

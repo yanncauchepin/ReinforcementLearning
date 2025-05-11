@@ -1,0 +1,19 @@
+{
+    "ENV" : {
+        "library" : "Gymnasium",
+        "environment" : "LunarLander-v3",
+        "render_mode" : "None",
+        "continuous" : "True",
+        "gravity" : -9.81,
+        "enable_wind" : "True",
+        "wind_power" : 15.0,
+        "turbulence_power": 1.5
+    },
+    "PPO" : {
+        "name" : "Proximal Policy Optimization",
+        "continuous" : "True", 
+        "agent_dir" : "agents/ppo",
+        "log_dir" : "logs/ppo",
+        "checkpoint_dir" : "checkpoints/ppo"
+    }
+}

@@ -26,14 +26,13 @@ ENVIRONMENT = config["ENV"]["environment"]
 LAP_COMPLETE_PERCENT = config["ENV"]["lap_complete_percent"]
 DOMAIN_RANDOMIZE = config["ENV"]["domain_randomize"]
 CONTINUOUS = config["DQN"]["continuous"]
-MODEL_DIR = config["DQN"]["mdoel_dir"]
+AGENT_DIR = config["DQN"]["agent_dir"]
 LOG_DIR = config["DQN"]["log_dir"]
 CHECKPOINT_DIR = config["DQN"]["checkpoint_dir"]
-POLICY_DIR = config["DQN"]["policy_dir"]
 
 now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
-MODEL_NOW = f"tfagent_{now}"
-MODEL_STATIC = "tfagent"
+AGENT_NOW = f"tfagent_{now}"
+AGENT_STATIC = "tfagent"
 
 
 
@@ -49,18 +48,17 @@ CONV_LAYER_PARAMS = ((32, (8, 8), 4), (64, (4, 4), 2), (64, (3, 3), 1))
 FC_LAYER_PARAMS = (512,)
 
 
-os.makedirs(Path(ROOT_PATH, MODEL_DIR), exist_ok=True)
+os.makedirs(Path(ROOT_PATH, AGENT_DIR), exist_ok=True)
 os.makedirs(Path(ROOT_PATH, LOG_DIR), exist_ok=True)
 os.makedirs(Path(ROOT_PATH, CHECKPOINT_DIR), exist_ok=True)
-os.makedirs(Path(ROOT_PATH, POLICY_DIR), exist_ok=True)
 
 
 def train_agent(static=False):
     
     if static is False:
-        model = Path(MODEL_NOW)
+        agent_name = AGENT_NOW
     else:
-        model = Path(MODEL_STATIC)
+        agent_name = AGENT_STATIC
     
     py_env = suite_gym.load(
         ENVIRONMENT, 
@@ -164,7 +162,7 @@ def train_agent(static=False):
             print(f'step = {step}, Average Return = {avg_return}')
     
     tf_policy_saver = policy_saver.PolicySaver(agent.policy)
-    tf_policy_saver.save(Path(ROOT_PATH, POLICY_DIR, model))
+    tf_policy_saver.save(Path(ROOT_PATH, AGENT_DIR, agent_name))
 
     py_env.close()
 
@@ -183,9 +181,9 @@ def compute_avg_return(environment, policy, num_episodes=10):
     return avg_return.numpy()[0]
 
 
-def agent_overwiew(model_path):
+def agent_overwiew(agent_path):
 
-    saved_policy = tf.saved_model.load(Path(model_path))
+    saved_policy = tf.saved_model.load(Path(agent_path))
 
 
     eval_py_env = suite_gym.load(ENVIRONMENT, gym_kwargs={'continuous': eval(CONTINUOUS), 'render_mode': "human"})
@@ -214,4 +212,4 @@ def agent_overwiew(model_path):
 
 if __name__ == "__main__":
     train_agent(static=True)
-    agent_overwiew(Path(ROOT_PATH, POLICY_DIR, MODEL_STATIC))
+    agent_overwiew(Path(ROOT_PATH, AGENT_DIR, AGENT_STATIC))

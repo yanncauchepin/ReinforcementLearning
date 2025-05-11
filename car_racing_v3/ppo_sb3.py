@@ -15,15 +15,15 @@ ENVIRONMENT = config["ENV"]["environment"]
 LAP_COMPLETE_PERCENT = config["ENV"]["lap_complete_percent"]
 DOMAIN_RANDOMIZE = config["ENV"]["domain_randomize"]
 CONTINUOUS = config["PPO"]["continuous"]
-MODEL_DIR = config["PPO"]["mdoel_dir"]
+AGENT_DIR = config["PPO"]["agent_dir"]
 LOG_DIR = config["PPO"]["log_dir"]
 CHECKPOINT_DIR = config["PPO"]["checkpoint_dir"]
 
 now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
-MODEL_NOW = f"sd3_{now}"
-MODEL_STATIC = "sd3"
+AGENT_NOW = f"sd3_{now}"
+AGENT_STATIC = "sd3"
 
-TIMESTEPS = 1000000
+TIMESTEPS = 50000
 N_STEPS = 3000
 LEARNING_RATE = 0.0003
 BATCH_SIZE = 64
@@ -32,16 +32,19 @@ GAMMA = 0.99
 GAE_LAMBDA = 0.95
 ENT_COEF = 0.0
 
-os.makedirs(Path(ROOT_PATH, MODEL_DIR), exist_ok=True)
+os.makedirs(Path(ROOT_PATH, AGENT_DIR), exist_ok=True)
 os.makedirs(Path(ROOT_PATH, LOG_DIR), exist_ok=True)
 os.makedirs(Path(ROOT_PATH, CHECKPOINT_DIR), exist_ok=True)
 
 def train_agent(static=False):
     
-    if static is False:
-        model_path = Path(ROOT_PATH, MODEL_DIR, MODEL_NOW)
+    if static:
+        agent_name = AGENT_STATIC
     else:
-        model_path = Path(ROOT_PATH, MODEL_DIR, MODEL_STATIC)
+        agent_name = AGENT_NOW
+
+    agent_path = Path(ROOT_PATH, AGENT_DIR, agent_name)
+    log_path = Path(ROOT_PATH, LOG_DIR, agent_name)
 
     env_kwargs = {
         'continuous': CONTINUOUS,
@@ -53,31 +56,32 @@ def train_agent(static=False):
     vec_env = VecFrameStack(vec_env, n_stack=4)
 
     # "CnnPolicy" is used because the observation space is an image.
-    model = PPO(
+    agent = PPO(
         "CnnPolicy", 
         vec_env, 
         verbose=1, 
-        tensorboard_log=Path(ROOT_PATH, LOG_DIR),
+        tensorboard_log=log_path,
         learning_rate=LEARNING_RATE,
         n_steps=N_STEPS,
         batch_size=BATCH_SIZE,
         n_epochs=N_EPOCHS, 
         gamma=GAMMA,
         gae_lambda=GAE_LAMBDA, 
-        ent_coef=ENT_COEF
+        ent_coef=ENT_COEF,
+        device="cuda"
     )
 
-    model.learn(total_timesteps=TIMESTEPS, progress_bar=True)
+    agent.learn(total_timesteps=TIMESTEPS, progress_bar=True)
 
-    model.save(model_path)
+    agent.save(agent_path)
 
     vec_env.close()
 
 
 
-def agent_overwiew(model_path):
+def agent_overwiew(agent_path):
     
-    model = PPO.load(Path(model_path))
+    agent = PPO.load(Path(agent_path))
 
     env_kwargs = {
         'continuous': CONTINUOUS, 
@@ -91,11 +95,11 @@ def agent_overwiew(model_path):
     for episode in range(3):
         observation = eval_env.reset()
         while terminated[0] == False: 
-            action, _states = model.predict(observation, deterministic=True)
+            action, _states = agent.predict(observation, deterministic=True)
             observation, rewards, terminated, info = eval_env.step(action)
             
     eval_env.close()
 
 if __name__ == "__main__":
     train_agent(static=True)
-    agent_overwiew(Path(ROOT_PATH, MODEL_DIR, MODEL_STATIC))
+    # agent_overwiew(Path(ROOT_PATH, AGENT_DIR, AGENT_STATIC))

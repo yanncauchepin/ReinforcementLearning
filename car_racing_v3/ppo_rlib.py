@@ -18,19 +18,19 @@ ENVIRONMENT = config["ENV"]["environment"]
 LAP_COMPLETE_PERCENT = config["ENV"]["lap_complete_percent"]
 DOMAIN_RANDOMIZE = config["ENV"]["domain_randomize"]
 CONTINUOUS = config["PPO"]["continuous"]
-MODEL_DIR = config["PPO"]["mdoel_dir"]
+AGENT_DIR = config["PPO"]["agent_dir"]
 LOG_DIR = config["PPO"]["log_dir"]
 CHECKPOINT_DIR = config["PPO"]["checkpoint_dir"]
 
 now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
-MODEL_NOW = f"rlib_{now}"
-MODEL_STATIC = "rlib"
+AGENT_NOW = f"rlib_{now}"
+AGENT_STATIC = "rlib"
 
 
 ITERATIONS = 10  
 
 
-os.makedirs(Path(ROOT_PATH, MODEL_DIR), exist_ok=True)
+os.makedirs(Path(ROOT_PATH, AGENT_DIR), exist_ok=True)
 os.makedirs(Path(ROOT_PATH, LOG_DIR), exist_ok=True)
 os.makedirs(Path(ROOT_PATH, CHECKPOINT_DIR), exist_ok=True)
 
@@ -42,9 +42,9 @@ ray.init(logging_level="INFO") # "DEBUG" for more verbosity or "ERROR" for less
 def train_agent(static=False):
     
     if static is False:
-        model = Path(MODEL_NOW)
+        agent_name = Path(AGENT_NOW)
     else:
-        model = Path(MODEL_STATIC)
+        agent_name = Path(AGENT_STATIC)
 
     config = (
         PPOConfig()
@@ -69,7 +69,7 @@ def train_agent(static=False):
             entropy_coeff=0.0,
         )
         .rl_module( # Added for new API stack model configuration
-            model_config_dict={
+            model_config={
                 "conv_filters": [ # Standard CNN structure for 96x96 images
                     [16, [8, 8], 4],
                     [32, [4, 4], 2],
@@ -89,15 +89,15 @@ def train_agent(static=False):
         print(pretty_print(result))
 
         if (i + 1) % 5 == 0: # Checkpoint every 5 iterations
-            algo.save(Path(ROOT_PATH, CHECKPOINT_DIR, model, i))
+            algo.save(Path(ROOT_PATH, CHECKPOINT_DIR, agent_name, str(i)))
 
-    trained_model = algo.save(Path(ROOT_PATH, MODEL_DIR, model))
+    trained_agent = algo.save(Path(ROOT_PATH, AGENT_DIR, agent_name))
     algo.stop()
     
-    return trained_model
+    return trained_agent
 
 
-def agent_overwiew(model_path):
+def agent_overwiew(agent_path):
 
     config = (
         PPOConfig()
@@ -105,7 +105,7 @@ def agent_overwiew(model_path):
             env=ENVIRONMENT,
             env_config={
                 "continuous": CONTINUOUS, 
-                "render_mode": None, 
+                "render_mode": "human", 
                 "lap_complete_percent": LAP_COMPLETE_PERCENT, 
                 "domain_randomize": DOMAIN_RANDOMIZE
             }
@@ -114,7 +114,7 @@ def agent_overwiew(model_path):
         .env_runners(num_env_runners=0)
         .training()
         .rl_module( # Added for new API stack model configuration
-            model_config_dict={ # Ensure model config matches training
+            model_config={ # Ensure model config matches training
                  "conv_filters": [
                     [16, [8, 8], 4],
                     [32, [4, 4], 2],
@@ -127,7 +127,7 @@ def agent_overwiew(model_path):
     )
 
     algo = config.build_algo()
-    algo.restore(model_path)
+    algo.restore(str(agent_path))
 
 
     env = gym.make(ENVIRONMENT, continuous=CONTINUOUS, render_mode="human")
@@ -149,4 +149,4 @@ def agent_overwiew(model_path):
 
 if __name__ == "__main__":
     train_agent(static=True)
-    agent_overwiew(Path(ROOT_PATH, MODEL_DIR, MODEL_STATIC))
+    agent_overwiew(Path(ROOT_PATH, AGENT_DIR, AGENT_STATIC))
