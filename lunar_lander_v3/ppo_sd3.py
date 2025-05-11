@@ -44,9 +44,7 @@ os.makedirs(Path(ROOT_PATH, LOG_DIR), exist_ok=True)
 os.makedirs(Path(ROOT_PATH, CHECKPOINT_DIR), exist_ok=True)
 
 def train_agent(static=False):
-    """
-    Trains a PPO agent on the LunarLander-v2 environment.
-    """
+    
     if static:
         agent_name = AGENT_STATIC
     else:
