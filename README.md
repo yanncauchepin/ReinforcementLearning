@@ -24,7 +24,7 @@ This project leverages several powerful libraries and frameworks for building an
 
 * **Ray RLlib:** A highly scalable and flexible open-source library for reinforcement learning that offers a wide range of algorithms and supports complex distributed setups.
 * **TF-Agents:** A library for reinforcement learning in TensorFlow 2, designed for flexibility and good integration with the TensorFlow ecosystem.
-* **Stable Baselines3 (SB3):** (Assuming "sd3" was a typo for SB3) A set of reliable implementations of reinforcement learning algorithms in PyTorch. *If "sd3" refers to a different tool, please update this section.*
+* **Stable Baselines3 (SB3):** A set of reliable implementations of reinforcement learning algorithms in PyTorch.
 
 ## Environments Tested
 
