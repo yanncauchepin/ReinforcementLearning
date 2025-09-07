@@ -38,7 +38,10 @@ LAMBDA = 0.95
 TRAIN_BATCH_SIZE = 4000
 NUM_EPOCHS = 10
 VF_LOSS_COEFF = 0.5
-ENTROPY_COEFF = 0.0  
+ENTROPY_COEFF = 0.0
+FCNET_HIDDENS = [256, 256]
+FCNET_ACTIVATION = "tanh"
+VF_SHARE_LAYERS = True
 
 
 os.makedirs(Path(ROOT_PATH, AGENT_DIR), exist_ok=True)
@@ -83,9 +86,9 @@ def train_agent(static=False):
         )
         .rl_module(
             model_config={
-                "fcnet_hiddens": [256, 256],  
-                "fcnet_activation": "tanh",   
-                "vf_share_layers": True, 
+                "fcnet_hiddens": FCNET_HIDDENS,  
+                "fcnet_activation": FCNET_ACTIVATION,   
+                "vf_share_layers": VF_SHARE_LAYERS, 
             }
         )
         .resources(num_gpus=1)
@@ -123,9 +126,9 @@ def agent_overwiew(agent_path):
         .training()
         .rl_module(
             model_config={ 
-                "fcnet_hiddens": [256, 256],  
-                "fcnet_activation": "tanh",   
-                "vf_share_layers": True, 
+                "fcnet_hiddens": FCNET_HIDDENS,  
+                "fcnet_activation": FCNET_ACTIVATION,   
+                "vf_share_layers": VF_SHARE_LAYERS, 
             }
         )
         .resources(num_gpus=1)

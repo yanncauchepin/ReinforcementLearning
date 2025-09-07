@@ -43,14 +43,14 @@ def random_record_overview():
         while not terminated and not truncated:
             
             action = ENV.action_space.sample()
-            # action[0]: steering (-1 to 1)
-            # action[1]: acceleration (0 to 1)
-            # action[2]: brake (0 to 1)
+            
             
             observation, reward, terminated, truncated, info = ENV.step(action)
             
             total_reward += reward
             steps += 1
+
+    ENV.close()
 
 
 def random_interactive_overview():
@@ -75,15 +75,14 @@ def random_interactive_overview():
         while not terminated and not truncated:
             
             action = ENV.action_space.sample()
-            # action[0]: steering (-1 to 1)
-            # action[1]: acceleration (0 to 1)
-            # action[2]: brake (0 to 1)
+            
             
             observation, reward, terminated, truncated, info = ENV.step(action)
             
             total_reward += reward
             steps += 1
 
+    ENV.close()
 
 if __name__ == "__main__":
     random_record_overview()

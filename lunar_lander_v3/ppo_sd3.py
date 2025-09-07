@@ -2,6 +2,7 @@ import gymnasium as gym
 from stable_baselines3 import PPO # Use torch as the backend
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import VecFrameStack
+from stable_baselines3.common.callbacks import CheckpointCallback
 import os
 from pathlib import Path
 import datetime
@@ -38,6 +39,7 @@ GAMMA = 0.99
 GAE_LAMBDA = 0.95
 ENT_COEF = 0.01 
 
+SAVE_FREQ = 5000
 
 os.makedirs(Path(ROOT_PATH, AGENT_DIR), exist_ok=True)
 os.makedirs(Path(ROOT_PATH, LOG_DIR), exist_ok=True)
@@ -52,6 +54,7 @@ def train_agent(static=False):
 
     agent_path = Path(ROOT_PATH, AGENT_DIR, agent_name)
     log_path = Path(ROOT_PATH, LOG_DIR, agent_name)
+    checkpoint_path = Path(ROOT_PATH, CHECKPOINT_DIR, agent_name)
 
     env_kwargs = {
         'render_mode': None,  
@@ -80,8 +83,16 @@ def train_agent(static=False):
         ent_coef=ENT_COEF,
         device='cuda'
     )
+    
+    checkpoint_callback = CheckpointCallback(
+        save_freq=SAVE_FREQ,
+        save_path=checkpoint_path,
+        name_prefix="rl_model",
+        save_replay_buffer=True,
+        save_vecnormalize=True,
+    )
 
-    agent.learn(total_timesteps=TIMESTEPS, progress_bar=True)
+    agent.learn(total_timesteps=TIMESTEPS, progress_bar=True, callback=checkpoint_callback)
 
     agent.save(agent_path)
 

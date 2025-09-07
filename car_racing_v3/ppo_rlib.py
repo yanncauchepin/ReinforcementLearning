@@ -27,7 +27,20 @@ AGENT_NOW = f"rlib_{now}"
 AGENT_STATIC = "rlib"
 
 
-ITERATIONS = 10  
+ITERATIONS = 10
+GAMMA = 0.99
+LEARNING_RATE = 0.0003
+LAMBDA = 0.95
+TRAIN_BATCH_SIZE = 4000
+NUM_EPOCHS = 10
+VF_LOSS_COEFF = 0.5
+ENTROPY_COEFF = 0.0
+CONV_FILTERS = [  # Standard CNN structure for 96x96 images
+    [16, [8, 8], 4],
+    [32, [4, 4], 2],
+    [256, [11, 11], 1],
+]
+VF_SHARE_LAYERS = True
 
 
 os.makedirs(Path(ROOT_PATH, AGENT_DIR), exist_ok=True)
@@ -60,22 +73,18 @@ def train_agent(static=False):
         .framework("torch")  # or "tf2" for TensorFlow
         .env_runners(num_env_runners=1) 
         .training(
-            gamma=0.99,
-            lr=0.0003,
-            lambda_=0.95,
-            train_batch_size=4000, # Adjust based on num_rollout_workers and rollout_fragment_length
-            num_epochs=10, # Changed from num_sgd_iter
-            vf_loss_coeff=0.5,
-            entropy_coeff=0.0,
+            gamma=GAMMA,
+            lr=LEARNING_RATE,
+            lambda_=LAMBDA,
+            train_batch_size=TRAIN_BATCH_SIZE, # Adjust based on num_rollout_workers and rollout_fragment_length
+            num_epochs=NUM_EPOCHS, # Changed from num_sgd_iter
+            vf_loss_coeff=VF_LOSS_COEFF,
+            entropy_coeff=ENTROPY_COEFF,
         )
         .rl_module( # Added for new API stack model configuration
             model_config={
-                "conv_filters": [ # Standard CNN structure for 96x96 images
-                    [16, [8, 8], 4],
-                    [32, [4, 4], 2],
-                    [256, [11, 11], 1], 
-                ],
-                "vf_share_layers": True, # Often good for PPO
+                "conv_filters": CONV_FILTERS,
+                "vf_share_layers": VF_SHARE_LAYERS,
             }
         )
         .resources(num_gpus=1)
@@ -115,12 +124,8 @@ def agent_overwiew(agent_path):
         .training()
         .rl_module( # Added for new API stack model configuration
             model_config={ # Ensure model config matches training
-                 "conv_filters": [
-                    [16, [8, 8], 4],
-                    [32, [4, 4], 2],
-                    [256, [11, 11], 1],
-                ],
-                "vf_share_layers": True,
+                 "conv_filters": CONV_FILTERS,
+                "vf_share_layers": VF_SHARE_LAYERS,
             }
         )
         .resources(num_gpus=0)

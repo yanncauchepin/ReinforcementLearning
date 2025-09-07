@@ -48,6 +48,7 @@ def random_record_overview():
             total_reward += reward
             steps += 1
 
+    ENV.close()
 
 def random_interactive_overview():
 
@@ -78,6 +79,7 @@ def random_interactive_overview():
             total_reward += reward
             steps += 1
 
+    ENV.close()
 
 if __name__ == "__main__":
     random_interactive_overview()
